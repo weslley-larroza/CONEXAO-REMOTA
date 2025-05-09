@@ -1,22 +1,19 @@
-CONEXAO-REMOTA
-Aplicativo em Python para facilitar conexões RDP (Remote Desktop Protocol) com múltiplos servidores. Desenvolvido com foco em praticidade, o sistema permite gerenciar acessos remotos a partir de uma interface simples e intuitiva, centralizando os endereços e credenciais dos servidores utilizados.
+# CONEXAO-REMOTA
 
-Funcionalidades
-Interface gráfica amigável para seleção de servidores
+Aplicação desenvolvida em Python com o objetivo de facilitar conexões remotas via RDP (Remote Desktop Protocol) a servidores pré-configurados. Ideal para uso em ambientes corporativos onde é necessário alternar rapidamente entre múltiplas conexões.
 
-Armazenamento local de servidores em formato JSON
+## ✨ Funcionalidades
 
-Suporte a ícones personalizados para facilitar a identificação visual
+- Interface gráfica simples e objetiva (Tkinter)
+- Conexões RDP automáticas com base em um arquivo de configuração
+- Organização centralizada dos servidores no arquivo `servidores.json`
+- Ícone e imagem personalizados para melhor identificação visual
+- Código aberto e personalizável conforme a necessidade
 
-Execução de conexões RDP automaticamente com base nas configurações fornecidas
+## 📁 Estrutura do Projeto
 
-Pronto para uso em ambientes corporativos ou pessoais
+- `ConexãoRemota.py` – Script principal da aplicação
+- `servidores.json` – Lista com os servidores e configurações de conexão
+- `acesso-remoto.ico` – Ícone utilizado pela interface
+- `img_acesso_remoto.png` – Imagem visual da aplicação
 
-Estrutura do Projeto
-ConexãoRemota.py: Script principal da aplicação
-
-servidores.json: Arquivo com a lista de servidores disponíveis para conexão
-
-acesso-remoto.ico: Ícone da aplicação
-
-img_acesso_remoto.png: Imagem utilizada na interface gráfica
