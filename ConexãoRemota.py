@@ -64,7 +64,7 @@ class ConfiguracaoDialog(QDialog):
         self.layout.addSpacing(10)
         self.layout.addWidget(add_btn)
         self.layout.addWidget(remove_btn)
-        self.layout.addWidget(user_btn)
+        #self.layout.addWidget(user_btn)
 
         # Botões OK / Cancelar
         buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
@@ -339,7 +339,6 @@ class ConnectionWindow(QWidget):
             """)
             btn.clicked.connect(lambda _, addr=server["address"]: self.open_rdp_config(addr))
             layout.addWidget(btn)
-            layout.addSpacing(10)
             self.button_list.append(btn)
 
     def open_config_dialog(self):
