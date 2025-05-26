@@ -6,15 +6,24 @@ import json
 import os
 import binascii
 import base64
+import webbrowser
+import win32gui
+import win32con
 import pywintypes
 import requests
-from PyQt5.QtCore import QThread, pyqtSignal, Qt
+from PyQt5.QtCore import QThread, pyqtSignal, Qt, QSize
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QMessageBox,
     QHBoxLayout, QDesktopWidget, QDialog, QLineEdit, QFormLayout, QDialogButtonBox,
-    QListWidget, QInputDialog, QScrollArea
+    QListWidget, QInputDialog, QScrollArea,
 )
+import sys, os
+
+def resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
 
 class ConnectionChecker(QThread):
     connection_status = pyqtSignal(bool, bool)
@@ -33,7 +42,7 @@ class ConfiguracaoDialog(QDialog):
         # Título
         title = QLabel("Acessos Cadastrados")
         title.setAlignment(Qt.AlignCenter)
-        title.setStyleSheet("font-size: 18px; font-weight: bold; color: #005CC7;")
+        title.setStyleSheet("font-size: 18px; font-weight: bold; color: #EEF4FC;")
         self.layout.addWidget(title)
 
         # Lista
@@ -71,24 +80,30 @@ class ConfiguracaoDialog(QDialog):
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
         buttons.setStyleSheet("""
-             QPushButton {
-                 background-color: #28a745;
-                 color: white;
-                 font-weight: bold;
-                 border-radius: 6px;
-                 padding: 6px 12px;
-             }
-             QPushButton:hover {
-                 background-color: #218838;
-             }
-         """)
+            QPushButton {
+                background-color: #28a745;
+                color: white;
+                font-weight: bold;
+                border-radius: 6px;
+                padding: 6px 12px;
+            }
+            QPushButton:!enabled {
+                background-color: #cccccc;
+            }
+            QPushButton:hover {
+                background-color: #218838;
+            }
+            QPushButton:disabled {
+                background-color: #aaaaaa;
+            }
+        """)
         self.layout.addSpacing(10)
         self.layout.addWidget(buttons)
 
         self.setLayout(self.layout)
         self.setStyleSheet("""
              QDialog {
-                 background-color: #f4f8fb;
+                 background-color: #EEEFF0;
                  font-family: 'Segoe UI';
                  font-size: 13px;
              }
@@ -176,22 +191,27 @@ class ConnectionWindow(QWidget):
         self.button_list = []
         self.initUI()
 
+    def abrir_link(self, event):
+        webbrowser.open("https://github.com/seu_usuario")  # ou LinkedIn
+
     def initUI(self):
-        self.setWindowTitle('Status dos Servidores')
+        self.setWindowTitle('Acesso Servidor')
         self.setWindowIcon(QIcon('acesso-remoto.ico'))
         self.setGeometry(0, 0, 700, 550)
         self.setFixedSize(self.size())
         self.center()
 
+
         main_layout = QHBoxLayout(self)
+        self.setStyleSheet("background-color: #EEEFF0;")  # Azul escuro profundo
 
         # Lado esquerdo
         left_widget = QWidget()
         left_layout = QVBoxLayout()
         left_widget.setLayout(left_layout)
-        left_widget.setStyleSheet("background-color: #005CC7; color: white; border-radius: 10px;")
+        left_widget.setStyleSheet("background-color: #0B4D9B; color: white; border-radius: 10px;")
 
-        status_title_label = QLabel('Acessos RDP')
+        status_title_label = QLabel('Acessos Remoto')
         status_title_label.setAlignment(Qt.AlignHCenter)  # Alinha horizontalmente ao centro
         status_title_label.setStyleSheet("font-size: 18px; font-weight: bold; color: white;")
         left_layout.addWidget(status_title_label)
@@ -242,24 +262,53 @@ class ConnectionWindow(QWidget):
         # Criar os botões e adicioná-los no layout de rolagem
         self.create_connection_buttons(self.scroll_layout)
 
-        self.config_button = QPushButton('Configurar')
+        self.config_button = QPushButton()
+        self.config_button.setFixedSize(40, 40)  # Define o tamanho do botão
+        self.config_button.setIcon(QIcon('settings.svg'))  # Substitua pelo caminho do seu ícone
+        self.config_button.setIconSize(QSize(24, 24))  # Define o tamanho do ícone
+
         self.config_button.setStyleSheet("""
             QPushButton {
-                background-color: #ffc107;
-                color: black;
-                font-weight: bold;
-                font-size: 14px;
+                background-color: #0B4D9B;
                 border-radius: 5px;
-                padding: 8px;
+                padding: 5px;
             }
             QPushButton:hover {
-                background-color: #e0a800;
-                color: white;
+                background-color: #555;
+            }
+        """)
+        # Botão do GitHub
+        self.github_button = QPushButton()
+        self.github_button.setFixedSize(40, 40)
+        self.github_button.setIcon(QIcon('icons8-github.svg'))  # Ícone do GitHub
+        self.github_button.setIconSize(QSize(24, 24))
+        self.github_button.setStyleSheet("""
+            QPushButton {
+                background-color: #0B4D9B;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #555;
             }
         """)
 
+        # Ao clicar no botão, abre o link do GitHub
+        self.github_button.clicked.connect(self.abrir_link)
+
         self.config_button.clicked.connect(self.open_config_dialog)
-        left_layout.addWidget(self.config_button)
+        # Container para os dois botões
+        buttons_container = QWidget()
+        buttons_layout = QHBoxLayout()
+        buttons_layout.setContentsMargins(0, 0, 0, 0)
+        buttons_layout.setSpacing(2)  # Espaço entre os botões
+
+        buttons_layout.addWidget(self.config_button)
+        buttons_layout.addWidget(self.github_button)
+
+        buttons_container.setLayout(buttons_layout)
+
+        # Adiciona o container ao layout principal, alinhado à esquerda
+        left_layout.addWidget(buttons_container, alignment=Qt.AlignLeft)
 
         main_layout.addWidget(left_widget)
 
@@ -267,14 +316,15 @@ class ConnectionWindow(QWidget):
         right_widget = QWidget()
         right_layout = QVBoxLayout()
         right_widget.setLayout(right_layout)
-        right_widget.setStyleSheet("background-color: white;")
+        right_widget.setStyleSheet("background-color: #EEEFF0;")
 
-        self.remote_access_label = QLabel('Acesso Remoto')
+        self.remote_access_label = QLabel()#'Acesso Remoto')
         self.remote_access_label.setAlignment(Qt.AlignCenter)
-        self.remote_access_label.setStyleSheet("font-size: 24px; font-weight: bold; color: black;")
+        self.remote_access_label.setStyleSheet("font-size: 24px; font-weight: bold; color: #003366;")
         right_layout.addWidget(self.remote_access_label)
 
-        pixmap = QPixmap('img_acesso_remoto.png')
+        self.setWindowIcon(QIcon(resource_path('acesso-remoto.ico')))
+        pixmap = QPixmap(resource_path('logo.png'))
         scaled_pixmap = pixmap.scaled(400, 400, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.image_label = QLabel()
         self.image_label.setPixmap(scaled_pixmap)
@@ -297,12 +347,15 @@ class ConnectionWindow(QWidget):
             botao_texto = f"IP Público: {ip}"
         except Exception as e:
             botao_texto = "IP Público: Erro"
+        self.image_label.setPixmap(scaled_pixmap)
+
+        self.setLayout(main_layout)
 
         self.remote_access_button = QPushButton(botao_texto)
         self.remote_access_button.setStyleSheet("""
             font-size: 20px; 
             padding: 15px 30px;
-            background-color: #005CC7; 
+            background-color: #0B4D9B; 
             color: white;
             border-radius: 5px;
             font-weight: bold;
@@ -318,26 +371,62 @@ class ConnectionWindow(QWidget):
         self.move(qr.topLeft())
 
     def open_rdp_config(self, address):
-        # Exemplo básico para Windows
-        os.system(f"mstsc /v:{address}")
+        subprocess.Popen(
+            ["mstsc", f"/v:{address}"],
+            creationflags=subprocess.CREATE_NO_WINDOW
+        )
+
+
+    def verificar_e_abrir_rdp(self, server_name, address):
+        def carregar_enderecos():
+            try:
+                with open("servidores.json", "r", encoding="utf-8") as f:
+                    dados = json.load(f)
+                    return [srv["address"].lower() for srv in dados if "address" in srv]
+            except Exception as e:
+                print(f"Erro ao carregar servidores.json: {e}")
+                return []
+
+        def enum_window_callback(hwnd, result):
+            if win32gui.IsWindowVisible(hwnd):
+                title = win32gui.GetWindowText(hwnd).lower()
+                for addr in enderecos_configurados:
+                    # Usa apenas o host ou porta para identificar no título
+                    if addr in title:
+                        win32gui.ShowWindow(hwnd, win32con.SW_RESTORE)
+                        win32gui.SetForegroundWindow(hwnd)
+                        result.append(hwnd)
+                        print(f"Já existe uma sessão RDP ativa para: {addr}")
+                        return
+            return True
+
+        enderecos_configurados = carregar_enderecos()
+        encontrados = []
+        win32gui.EnumWindows(enum_window_callback, encontrados)
+
+        if not encontrados:
+            print(f"Abrindo nova conexão RDP: {server_name} ({address})")
+            self.open_rdp_config(address)
+        else:
+            print("Sessão já aberta foi maximizada.")
 
     def create_connection_buttons(self, layout):
         for server in self.servers:
             btn = QPushButton(server["name"])
             btn.setStyleSheet("""
                 QPushButton {
-                    background-color: #28a745;
+                    background-color: #F28C28;
                     color: white;
                     font-weight: bold;
-                    font-size: 16px;
-                    border-radius: 5px;
+                    font-size: 17px;
+                    border-radius: 10px;
                     padding: 10px;
                 }
                 QPushButton:hover {
-                    background-color: #218838;
+                    background-color: #D9741F;
                 }
             """)
-            btn.clicked.connect(lambda _, addr=server["address"]: self.open_rdp_config(addr))
+            btn.clicked.connect(lambda _, addr=server["address"], name=server["name"]: self.verificar_e_abrir_rdp(name, addr))
             layout.addWidget(btn)
             self.button_list.append(btn)
 

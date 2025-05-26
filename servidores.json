@@ -1,18 +1,18 @@
 [
     {
-        "name": "8577",
-        "address": "test1.ddns.net:4444"
+        "name": "Acesso 185",
+        "address": "soollar.ddns.net:8577"
     },
     {
-        "name": "8576",
-        "address": "test.ddns.net:3333"
+        "name": "Acesso 186",
+        "address": "soollar1.ddns.net:8576"
     },
     {
-        "name": "8575",
-        "address": "test1.ddns.net:2222"
+        "name": "Acesso 187",
+        "address": "soollar.ddns.net:8575"
     },
     {
-        "name": "8578",
-        "address": "test.ddns.net:1111"
+        "name": "Acesso 188",
+        "address": "soollar1.ddns.net:8578"
     }
 ]
