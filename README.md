@@ -16,5 +16,5 @@ Aplicação desenvolvida em Python com o objetivo de facilitar conexões remotas
 - `servidores.json` – Lista com os servidores e configurações de conexão
 - `acesso-remoto.ico` – Ícone utilizado pela interface
 - `img_acesso_remoto.png` – Imagem visual da aplicação
-<img width="300" alt="image" src="https://github.com/user-attachments/assets/a27da695-05d2-46e7-8204-112421e83da2" />
+<img width="400" alt="image" src="https://github.com/user-attachments/assets/a27da695-05d2-46e7-8204-112421e83da2" />
 
