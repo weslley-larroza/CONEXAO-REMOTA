@@ -326,7 +326,7 @@ class ConnectionWindow(QWidget):
             btn = QPushButton(server["name"])
             btn.setStyleSheet("""
                 QPushButton {
-                    background-color: #28a745;
+                    background-color: #00A010;
                     color: white;
                     font-weight: bold;
                     font-size: 16px;
@@ -334,7 +334,7 @@ class ConnectionWindow(QWidget):
                     padding: 10px;
                 }
                 QPushButton:hover {
-                    background-color: #218838;
+                    background-color: #105617;
                 }
             """)
             btn.clicked.connect(lambda _, addr=server["address"]: self.open_rdp_config(addr))
