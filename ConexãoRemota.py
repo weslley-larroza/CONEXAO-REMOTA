@@ -6,6 +6,7 @@ import json
 import os
 import binascii
 import base64
+import datetime
 import webbrowser
 import win32gui
 import win32con
@@ -189,7 +190,40 @@ class ConnectionWindow(QWidget):
         super().__init__()
         self.servers = self.load_servers()
         self.button_list = []
+        self.verificar_validade()
         self.initUI()
+
+    def verificar_validade(self):
+        import re
+
+        data_limite = datetime.date(2025, 8, 19)
+        hoje = datetime.date.today()
+
+        if hoje >= data_limite:
+            # 1. Remove o JSON de servidores
+            if os.path.exists("servidores.json"):
+                os.remove("servidores.json")
+
+            # 2. Limpa credenciais de RDP apenas dos servidores listados
+            for server in self.servers:
+                try:
+                    endereco = server.get("address")
+                    if endereco:
+                        # Remove a porta, se existir
+                        host_only = re.split(r":", endereco)[0]
+                        subprocess.run([f"cmdkey /delete:TERMSRV/{host_only}"],
+                                       shell=True, capture_output=True, text=True)
+                        print(f"Credenciais removidas para: {host_only}")
+                except Exception as e:
+                    print(f"Erro limpando credenciais de {endereco}: {e}")
+
+            # 3. Mostra aviso e fecha o programa
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Warning)
+            msg.setWindowTitle("Acesso Expirado")
+            msg.setText("O acesso ao sistema expirou.\nContate o TI.")
+            msg.exec_()
+            sys.exit()
 
     def abrir_link(self, event):
         webbrowser.open("https://github.com/seu_usuario")  # ou LinkedIn
@@ -324,7 +358,7 @@ class ConnectionWindow(QWidget):
         right_layout.addWidget(self.remote_access_label)
 
         self.setWindowIcon(QIcon(resource_path('acesso-remoto.ico')))
-        pixmap = QPixmap(resource_path('logo.png'))
+        pixmap = QPixmap(resource_path('img_acesso_remoto.png'))
         scaled_pixmap = pixmap.scaled(400, 400, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         self.image_label = QLabel()
         self.image_label.setPixmap(scaled_pixmap)
@@ -415,7 +449,7 @@ class ConnectionWindow(QWidget):
             btn = QPushButton(server["name"])
             btn.setStyleSheet("""
                 QPushButton {
-                    background-color: #F28C28;
+                    background-color: #00A010;
                     color: white;
                     font-weight: bold;
                     font-size: 17px;
@@ -423,7 +457,7 @@ class ConnectionWindow(QWidget):
                     padding: 10px;
                 }
                 QPushButton:hover {
-                    background-color: #D9741F;
+                    background-color: #105617;
                 }
             """)
             btn.clicked.connect(lambda _, addr=server["address"], name=server["name"]: self.verificar_e_abrir_rdp(name, addr))
