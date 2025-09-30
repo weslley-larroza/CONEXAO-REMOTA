@@ -226,7 +226,7 @@ class ConnectionWindow(QWidget):
             sys.exit()
 
     def abrir_link(self, event):
-        webbrowser.open("https://github.com/seu_usuario")  # ou LinkedIn
+        webbrowser.open("https://www.linkedin.com/in/weslley-larroza-b8bb57213")  # ou LinkedIn
 
     def initUI(self):
         self.setWindowTitle('Acesso Servidor')
